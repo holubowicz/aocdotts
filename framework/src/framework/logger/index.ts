@@ -62,7 +62,7 @@ export class Logger {
 
 		const mode = this.ctx.runner.testMode ? c.yellow("Test mode") : c.blue("Real mode");
 
-		const answer = this.ctx.runner.answer ? "Answer: " + c.green(this.ctx.runner.answer) : "";
+		const answer = this.ctx.runner.answer !== null ? "Answer: " + c.green(this.ctx.runner.answer) : "";
 
 		const message = icon + " " + [time, mode, answer].filter((part) => part.length > 0).join(c.dim(" | "));
 
