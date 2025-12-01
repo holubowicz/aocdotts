@@ -1,6 +1,6 @@
 import { existsSync, FSWatcher, mkdirSync } from "node:fs";
 import { copyFile, mkdir, writeFile } from "node:fs/promises";
-import { join, resolve } from "node:path";
+import { join } from "node:path";
 import { PuzzleIdentifier, type AOCConfig } from "@/types";
 import { watch } from "chokidar";
 
@@ -75,19 +75,23 @@ export class Framework {
 			// Prevent cli from exiting right away
 			this.keepAlive = true;
 
-			const watcher = watch(resolve(this.runner.getDir(), this.runner.path), {
+			const watcher = watch(this.runner.getDir(), {
 				ignoreInitial: true,
 				persistent: true,
 			});
 
-			watcher.on("change", () => {
-				this.logger.log("File change detected, re-running...");
-
+			watcher.on("change", async (path: string) => {
 				if (!this.runner) {
 					throw new Error("Watcher still running but runner instance is missing. This should not happen.");
 				}
 
-				this.runner.run();
+				if (/input(?:\.\w+)?\.txt$/.test(path)) {
+					await this.runner.loadInput();
+					this.logger.log("Input change detected, reloading...");
+				}
+
+				this.logger.log("File change detected, re-running...");
+				void this.runner.run();
 			});
 
 			this.addExitHook(() => {
