@@ -68,13 +68,12 @@ export class Framework {
 	}
 
 	public async run(puzzle: PuzzleIdentifier, watchMode: boolean = false) {
+		if (watchMode) this.keepAlive = true; // Prevent cli from exiting right away
+
 		this.runner = new Runner(this, puzzle);
 		await this.runner.init();
 
 		if (watchMode) {
-			// Prevent cli from exiting right away
-			this.keepAlive = true;
-
 			const watcher = watch(this.runner.getDir(), {
 				ignoreInitial: true,
 				persistent: true,
