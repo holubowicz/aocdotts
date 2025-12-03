@@ -5,20 +5,11 @@ run(
 		let sum = 0;
 
 		for (const rawRange of input.split(",")) {
-			const [rangeStart, rangeEnd] = rawRange.trim().split("-").map(Number);
+			const [rangeStart, rangeEnd] = rawRange.split("-").map(Number);
 
 			for (let num = rangeStart; num <= rangeEnd; num++) {
-				const str = String(num);
-				const len = str.length;
-
-				for (let n = 2; n <= len; n++) {
-					if (len % n !== 0) continue;
-
-					const parts = str.match(new RegExp(".{1," + len / n + "}", "g"))!;
-					if (parts.every((element) => element === parts[0])) {
-						sum += num;
-						break;
-					}
+				if (/^(.+)\1+$/.test(String(num))) {
+					sum += num;
 				}
 			}
 		}
